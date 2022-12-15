@@ -1,0 +1,18 @@
+@use './abstracts' as *;
+
+
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: none;
+    font-family: 'Helvetica', sans-serif;
+    background-color: none;
+}
+
+body{
+    font-size: $font-size;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
