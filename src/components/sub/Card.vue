@@ -19,8 +19,8 @@
     .card{
         @include flex;
         position: relative;
-        width: 150px;
-        border-radius: 10px;
+        width: 8.5em;
+        border-radius: 0.5em;
         overflow: hidden;
 
         img{
@@ -34,12 +34,16 @@
             }
             &::after{
                 content: '';
-                background: url('/images/backside.jpg') no-repeat;
+                background: url('/images/backside-vue.jpg') no-repeat;
                 background-size: contain;
                 position: absolute;
                 height: 100%;
                 width: 100%;
             }
+        }
+
+        &.enlarge{
+            transform:scale(1.25);
         }
     }
 </style>

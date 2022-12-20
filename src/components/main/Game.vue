@@ -1,119 +1,222 @@
-<script setup>
-  import { ref, reactive, computed } from 'vue'
-  import Card from '../sub/Card.vue'
+	<script setup>
+	import { ref, reactive, computed, onMounted } from 'vue'
+	import Card from '../sub/Card.vue'
+	import Results from '../sub/Results.vue'
+	import PlayerActions from '../sub/PlayerActions.vue'
 
-  const deck = ref({});
+	const deck = ref({});
 
-  const player = reactive({
-    hand: [],
-    status: ''
-  })
+	const player = reactive({
+		hand: [],
+		coins: 24,
+		wager: 1,
+		tags: []
+	})
+	
+	const dealer = reactive({
+		hand: [],
+		tags: []
+	})
 
-  const dealer = reactive({
-    hand: [],
-    status: ''
-  })
+	const endResult = ref('');
 
-  function newDeck(callback){
-    return new Promise((resolve) => {
-      fetch('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=6')
-        .then(response => response.json())
-        .then(response => {
-            deck.value = response
-            resolve();
-        })
-        .catch(error => console.error(error));
-    })
-  }
+	const handValues = computed(() => {
+		return {
+			player: getHandValue(player.hand),
+			dealer: getHandValue(dealer.hand)
+		}
 
-  function draw(count, callback){
-    fetch(`https://deckofcardsapi.com/api/deck/${deck.value.deck_id}/draw/?count=${count}`)
-      .then(response => response.json())
-      .then(response => {
-        deck.value.count = response.remaining;
-        callback(response);
-      })
-      .catch(error => console.error(error))
-  }
+		function getHandValue(hand){
+			if(hand.length < 2) return null;
 
-  function shuffle(){
-    fetch(`https://deckofcardsapi.com/api/deck/${deck.value.deck_id}/shuffle/`)
-      .then(response => response.json())
-      .then(response => {
-        console.log('shuffled')
-        deck.value = response;
-      })
-  }
+			const baseValue = hand.reduce((a,b) =>  a + getCardValue(b), 0);
+			const aceCount = hand.filter((card) => card.value == 'ACE').length;
 
-  function initialDraw(){
-    draw(4, (response) => {
-      const [ a, b, c, d] = response.cards;
+			if(aceCount > 0){
+				// potential values of the hand with all the ace values. Values increment by 10 for each ace in the hand
+				const potentialHands = [];
 
-      function addCard(card, hand, facedown=false){
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            card.facedown = facedown;
-            hand.push(card);
-            resolve();
-          }, 500)
-        })
-      }
+				for(let count = 0; count <= aceCount; count++){
+					const potentialHand = baseValue + (count * 10);
+					// pushes the value to potentialHands array. If value goes over 21, the hand value would become 0, meaning bust
+					potentialHands.push(potentialHand > 21 ? 0 : potentialHand)
+				}
+				// return the best hand (resolved)
+				return resolveHand(potentialHands.reduce((a,b) => Math.max(a,b)))
+			}
 
-      addCard(a, dealer.hand, true)
-      .then(() => addCard(b, dealer.hand))
-      .then(() => addCard(c, player.hand))
-      .then(() => addCard(d, player.hand))
+			return resolveHand(baseValue)
 
-    })
-  }
+			function resolveHand(handValue){
+				if(handValue == 0) return 'BUST';
+				else if(handValue == 21) return 'BLACK JACK';
+				return handValue
+			}
 
-  newDeck().then(() => initialDraw());
-  
+			function getCardValue(card){
+				if(['JACK', 'QUEEN', 'KING'].find(royal => card.value == royal)) return 10;
+				else if(card.value == 'ACE') return 1;
+				else return Number(card.value);
+			}
+		}
+	})
 
-</script>
 
-<template>
-  <div id="dealer-hand-container" class="hand-container">
-    <h3>Dealer Hand</h3>
-      <TransitionGroup name="card" id="dealer-hand" class="hand" tag="ul">
-        <Card 
-          v-for="card in dealer.hand" 
-          :card="card"
-          :key="card.code"
-        />
-      </TransitionGroup>
-  </div>
+	function newDeck(callback){
+		return new Promise((resolve) => {
+		fetch('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=6')
+			.then(response => response.json())
+			.then(response => {
+				deck.value = response
+				resolve();
+			})
+			.catch(error => console.error(error));
+		})
+	}
 
-  <div id="player-hand" class="hand-container">
-    <h3>Player Hand</h3>
-      <TransitionGroup name="card" id="player-hand" class="hand" tag="ul">
-        <Card 
-          v-for="card in player.hand" 
-          :card="card"
-          :key="card.code"
-        />
-      </TransitionGroup>
-  </div>
-</template>
+	function draw(count, callback){
+		fetch(`https://deckofcardsapi.com/api/deck/${deck.value.deck_id}/draw/?count=${count}`)
+		.then(response => response.json())
+		.then(response => {
+			deck.value.count = response.remaining;
+			callback(response);
+		})
+		.catch(error => console.error(error))
+	}
 
-<style lang="scss">
-  @use '../../styles/abstracts' as *;
+	function shuffle(){
+		fetch(`https://deckofcardsapi.com/api/deck/${deck.value.deck_id}/shuffle/`)
+		.then(response => response.json())
+		.then(response => {
+			console.log('shuffled')
+			deck.value = response;
+		})
+	}
 
-  #game{
-    height: 100vh;
-    width: 100vw;
-    background-color: $color-gscale1;
+	function dealCards(){
+		draw(4, (response) => {
+		const [ a, b, c, d] = response.cards;
 
-    .hand-container{
+			addCard(a, dealer.hand, true)
+			.then(() => addCard(b, player.hand))
+			.then(() => addCard(c, dealer.hand))
+			.then(() => addCard(d, player.hand))
+			.then(() => wait(500, () => player.tags.push('card-zoom')))
+			.finally(() => wait(300, checkResult))
+		})
 
-      h3{
-        color: white;
-      }
+		function addCard(card, hand, facedown=false){
+			return wait(500, () => {
+				card.facedown = facedown;
+				hand.push(card);
+			})
+		}
+	}
 
-      .hand{
-        @include flex;
-      }
-    }
-  }
+	function reset(){
+		player.wager = 1;
+		player.hand = [];
+		player.statuses = [];
+		dealer.hand = [];
+		dealer.statuses = [];
+		endResult.value = '';
 
-</style>
+		wait(500, dealCards);
+	}
+
+	function checkResult(){
+		if(isNaN(handValues.value.player)){
+			endResult.value = handValues.value.player;
+		}
+	}
+
+	function resolveDealer(){
+		// open first card
+		// calculate if dealer's hand is less than 17
+	}
+
+	function wait(ms, callback){
+		return new Promise(resolve => {
+			setTimeout(() => {
+				callback();
+				resolve();
+			}, ms)
+		})
+	}
+
+	onMounted(() => newDeck().then(dealCards))
+	
+	</script>
+
+	<template>
+		<div id="game">
+			<div id="dealer-hand-container" class="hand-container">
+				<TransitionGroup name="card" id="dealer-hand" class="hand" tag="ul">
+					<Card 
+					v-for="card in dealer.hand" 
+					:card="card"
+					:key="card.code"
+					/>
+				</TransitionGroup>
+			</div>
+
+			<div 
+				id="player-hand-container"
+				ref="playerRef" 
+				:class="['hand-container',{
+					'card-zoom': player.tags.includes('card-zoom')
+				}]">
+				<TransitionGroup name="card" id="player-hand" class="hand" tag="ul">
+					<Card 
+					v-for="card in player.hand" 
+					:card="card"
+					:key="card.code"
+					/>
+				</TransitionGroup>
+			</div>
+
+			<PlayerActions 
+			
+			/>
+
+			<Results 
+				:end-result="endResult"
+				@reset="reset()"
+			/>
+		</div>
+	</template>
+
+	<style lang="scss">
+	@use '../../styles/abstracts' as *;
+
+	#game{
+		position: relative;
+		z-index: 1;
+		width: 100%;
+		@include flex($direction:column, $align: center, $justify:space-between);
+		padding: 3rem;
+
+		.hand-container{
+			transition: all 300ms ease;
+
+			h3{
+				color: white;
+			}
+			
+			.hand{
+				@include flex($gap: 0.25em);
+
+				&#dealer-hand{
+					font-size: 0.8rem;
+				}
+			}
+
+			&#player-hand-container{
+				&.card-zoom{
+					transform: scale(1.2);
+				}
+			}
+		}
+	}
+
+	</style>
