@@ -1,28 +1,19 @@
 	<script setup>
 	import { ref, reactive, computed, onMounted } from 'vue'
 	import { deck } from '../stores/deck'
+	import { player } from '../stores/player'
+	import { dealer } from '../stores/dealer'
+	import { gameSequence } from '../stores/gameSequence'
 	import Card from '../sub/Card.vue'
 	import Results from '../sub/Results.vue'
 	import PlayerActions from '../sub/PlayerActions.vue'
-
-	const player = reactive({
-		hand: [],
-		coins: 24,
-		wager: 1,
-		tags: []
-	})
-	
-	const dealer = reactive({
-		hand: [],
-		tags: []
-	})
 
 	const endResult = ref('');
 
 	const handValues = computed(() => {
 		return {
-			player: getHandValue(player.hand),
-			dealer: getHandValue(dealer.hand)
+			player: getHandValue(player.value.hand),
+			dealer: getHandValue(dealer.value.hand)
 		}
 
 		function getHandValue(hand){
@@ -64,11 +55,11 @@
 		deck.draw(4, (response) => {
 		const [ a, b, c, d] = response.cards;
 
-			addCard(a, dealer.hand, true)
-			.then(() => addCard(b, player.hand))
-			.then(() => addCard(c, dealer.hand))
-			.then(() => addCard(d, player.hand))
-			.then(() => wait(500, () => player.tags.push('card-zoom')))
+			addCard(a, dealer.value.hand, true)
+			.then(() => addCard(b, player.value.hand))
+			.then(() => addCard(c, dealer.value.hand))
+			.then(() => addCard(d, player.value.hand))
+			.then(() => wait(500, () => player.value.tags.push('card-zoom')))
 			.finally(() => wait(300, checkResult))
 		})
 
@@ -81,11 +72,11 @@
 	}
 
 	function reset(){
-		player.wager = 1;
-		player.hand = [];
-		player.statuses = [];
-		dealer.hand = [];
-		dealer.statuses = [];
+		player.value.wager = 1;
+		player.value.hand = [];
+		player.value.statuses = [];
+		dealer.value.hand = [];
+		dealer.value.statuses = [];
 		endResult.value = '';
 
 		wait(500, dealCards);
@@ -120,7 +111,7 @@
 			<div id="dealer-hand-container" class="hand-container">
 				<TransitionGroup name="card" id="dealer-hand" class="hand" tag="ul">
 					<Card 
-					v-for="card in dealer.hand" 
+					v-for="card in dealer.value.hand" 
 					:card="card"
 					:key="card.code"
 					/>
@@ -131,20 +122,18 @@
 				id="player-hand-container"
 				ref="playerRef" 
 				:class="['hand-container',{
-					'card-zoom': player.tags.includes('card-zoom')
+					'card-zoom': player.value.tags.includes('card-zoom')
 				}]">
 				<TransitionGroup name="card" id="player-hand" class="hand" tag="ul">
 					<Card 
-					v-for="card in player.hand" 
+					v-for="card in player.value.hand" 
 					:card="card"
 					:key="card.code"
 					/>
 				</TransitionGroup>
 			</div>
 
-			<PlayerActions 
-				:player="player"
-			/>
+			<PlayerActions/>
 
 			<Results 
 				:end-result="endResult"
