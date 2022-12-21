@@ -1,10 +1,9 @@
 	<script setup>
 	import { ref, reactive, computed, onMounted } from 'vue'
+	import { deck } from '../stores/deck'
 	import Card from '../sub/Card.vue'
 	import Results from '../sub/Results.vue'
 	import PlayerActions from '../sub/PlayerActions.vue'
-
-	const deck = ref({});
 
 	const player = reactive({
 		hand: [],
@@ -61,40 +60,8 @@
 		}
 	})
 
-
-	function newDeck(callback){
-		return new Promise((resolve) => {
-		fetch('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=6')
-			.then(response => response.json())
-			.then(response => {
-				deck.value = response
-				resolve();
-			})
-			.catch(error => console.error(error));
-		})
-	}
-
-	function draw(count, callback){
-		fetch(`https://deckofcardsapi.com/api/deck/${deck.value.deck_id}/draw/?count=${count}`)
-		.then(response => response.json())
-		.then(response => {
-			deck.value.count = response.remaining;
-			callback(response);
-		})
-		.catch(error => console.error(error))
-	}
-
-	function shuffle(){
-		fetch(`https://deckofcardsapi.com/api/deck/${deck.value.deck_id}/shuffle/`)
-		.then(response => response.json())
-		.then(response => {
-			console.log('shuffled')
-			deck.value = response;
-		})
-	}
-
 	function dealCards(){
-		draw(4, (response) => {
+		deck.draw(4, (response) => {
 		const [ a, b, c, d] = response.cards;
 
 			addCard(a, dealer.hand, true)
@@ -144,7 +111,7 @@
 		})
 	}
 
-	onMounted(() => newDeck().then(dealCards))
+	onMounted(() => deck.newDeck().then(dealCards))
 	
 	</script>
 
@@ -176,7 +143,7 @@
 			</div>
 
 			<PlayerActions 
-			
+				:player="player"
 			/>
 
 			<Results 

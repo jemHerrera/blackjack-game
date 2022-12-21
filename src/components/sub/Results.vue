@@ -14,6 +14,7 @@
     <div v-if="endResult" id="result-overlay" @click="$emit('reset')">
 			<h2 v-if="endResult == 'BLACK JACK'">BLACK JACK!</h2>
 			<h2 v-else-if="endResult == 'BUST'">BUST</h2>
+			<h2 v-else-if="endResult == 'PUSH'">PUSH</h2>
 			<p>Click anywhere to continue</p>
 		</div>
 	</transition>
