@@ -1,8 +1,12 @@
 import { reactive } from 'vue';
 
 export const dealer = reactive({
-	value: {
-		hand: [],
-		tags: []
+	hand: [],
+	addCard(card, facedown=false){
+		card.facedown = facedown;
+		this.hand.push(card);
 	},
+	reset(){
+		this.hand = [];
+	}
 })

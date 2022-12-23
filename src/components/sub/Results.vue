@@ -2,21 +2,26 @@
 	import { computed } from 'vue';
 
 	const props = defineProps({
-			endResult: String
+		gameResult: String
 	})
 
-	defineEmits(['reset'])
+	const classes = computed(() => {
+		return {
+			'blackjack': props.gameResult == 'BLACK JACK',
+			'lose': props.gameResult == 'LOSE' || props.gameResult == 'BUST'
+		}
+	})
+
+	defineEmits(['newGame'])
 
 </script>
 
 <template>
 	<transition name="fade">
-    <div v-if="endResult" id="result-overlay" @click="$emit('reset')">
-			<h2 v-if="endResult == 'BLACK JACK'">BLACK JACK!</h2>
-			<h2 v-else-if="endResult == 'BUST'">BUST</h2>
-			<h2 v-else-if="endResult == 'PUSH'">PUSH</h2>
-			<p>Click anywhere to continue</p>
-		</div>
+    <div v-if="gameResult" id="result-overlay" @click="$emit('newGame')">
+		<h2 :class="classes">{{ gameResult }}</h2>
+		<p>Click anywhere to continue</p>
+	</div>
 	</transition>
 </template>
 
@@ -33,8 +38,15 @@
 			background: rgba(0, 0, 0, 0.8);
 			
 			h2{
-				font-size: 3rem;
+				font-size: 4rem;
 				color: white;
+
+				&.blackjack{
+					color: $color-blackjack;
+				}
+				&.lose, &.bust{
+					color: $color-lose;
+				}
 			}
 			p{
 				color: white;
