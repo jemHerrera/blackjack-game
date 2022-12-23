@@ -23,3 +23,4 @@ goals.txt
 *.njsproj
 *.sln
 *.sw?
+.prettierignore
