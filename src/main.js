@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import Game from './BlackJack.vue'
+import Blackjack from './Blackjack.vue'
 
-createApp(Game).mount('#blackjack')
+createApp(Blackjack).mount('#blackjack')
 

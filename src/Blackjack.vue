@@ -1,8 +1,8 @@
 <script setup>
+  import { ref, onMounted } from 'vue';
   import Game from './components/main/Game.vue'
   import Settings from './components/main/Settings.vue'
   import ShootingStarBackground from './components/main/ShootingStarBackground.vue';
-  import { ref, onMounted } from 'vue';
 
   const settingsToggle = ref(false);
 
@@ -43,21 +43,21 @@
     @include flex;
 
     .button-settings{
-        position: fixed;
-        background: none;
-        top: 1rem;
-        left: 1rem;
-        font-size: 3rem;
-        z-index: 3;
+      position: fixed;
+      background: none;
+      top: 1rem;
+      left: 1rem;
+      font-size: 3rem;
+      z-index: 3;
 
-        span{
-          font-size: 1em;
-          color: $color-glight3;
-        }
+      span{
+        font-size: 1em;
+        color: $color-glight3;
+      }
 
-        @include mdpi-up{
-          display: none;
-        }
+      @include mdpi-up{
+        display: none;
+      }
     }
     
   }
