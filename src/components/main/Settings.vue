@@ -7,7 +7,7 @@
         <div class="settings-container">
             <header>
                 <h1>BlackJack</h1>
-                <h2>Built with <a href="https://vuejs.org/" target="_blank">Vue</a></h2>
+                <h2>Built with <a href="https://vuejs.org/" target="_blank">VueJS</a></h2>
             </header>
             <footer>
                 <a href="https://jemherrera.github.io/portfolio/" target="_blank">{{new Date().getFullYear()}} Jem Herrera</a>
