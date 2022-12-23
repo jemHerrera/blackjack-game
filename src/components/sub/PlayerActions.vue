@@ -4,10 +4,7 @@
 	import { player } from '../stores/player';
 	import { gameSequence } from '../stores/gameSequence';
 
-	const emits = defineEmits(['checkResult'])
-	const props = defineProps({
-		wait: Function
-	})
+	const emits = defineEmits(['checkHit', 'stand'])
 
 	function doubleDown(){
 		
@@ -16,26 +13,29 @@
 		
 	}
 	function stand(){
-		dealer.hand[0].facedown = false;
-		gameSequence.current = 'reveal';
-		wait(300, () => {
-
-		})
+		emits('stand');
 	}
 	function hit(){
 		deck.draw(1, (response) => {
 			const [ card ] = response.cards;
 			player.addCard(card);
-			emits('checkResult');
+			emits('checkHit');
 		})
 	}
-	function addBet(){
-			
-	}
+
 	</script>
 
 	<template>
 		<div id="player-actions">
+			<div id="player-wager">
+				<img 
+				src="/images/chip-green.png" 
+				class="chip" 
+				v-for="wager in player.wager" 
+				:key="wager"
+				/>
+			</div>
+			<div class="user-controls">
 				<button id="double-down" @click="doubleDown">Double Down</button>
 				<button id="split" @click="split">Split</button>
 				<div id="chips">
@@ -45,6 +45,7 @@
 				</div>
 				<button id="stand" @click="stand">Stand</button>
 				<button id="hit" @click="hit">Hit</button>	
+			</div>
 		</div>
 	</template>
 
@@ -52,32 +53,43 @@
 			@use '../../styles/abstracts' as *;
 
 			#player-actions{
-				@include flex($justify:center, $gap: 1.5rem);
-				pointer-events: none;
+				@include flex($direction:column, $align:center, $gap:3rem);
 
-				button{
-					flex: 1;
-					padding: 1em;
-					font-size: 1.5rem;
-					text-transform: uppercase;
-					cursor: pointer;
-					opacity: 0.3;
-					transition: all 300ms ease;
-				}
-
-				&.active button{
+				&.active .user-controls button{
 					opacity:1;
 					pointer-events: visible;
 				}
 
-				#chips{
-					@include flex($align:center, $gap: 0.5em);
-					*{color: white}
-					font-size: 1.5rem;
+				#player-wager{
+					@include flex($justify: center, $gap: 1rem);
+					font-size: 2rem;
+					.chip{
+						height: 2.5em;
+					}
+				}
+				.user-controls{
+					@include flex($justify:center, $gap: 1.5rem);
+					pointer-events: none;
 
-					.coin-icon{
-						img{
-							height: 2em;
+					button{
+						flex: 1;
+						padding: 1em;
+						font-size: 1.5rem;
+						text-transform: uppercase;
+						cursor: pointer;
+						opacity: 0.3;
+						transition: all 300ms ease;
+					}
+
+					#chips{
+						@include flex($align:center, $gap: 0.5em);
+						*{color: white}
+						font-size: 1.5rem;
+
+						.coin-icon{
+							img{
+								height: 2em;
+							}
 						}
 					}
 				}

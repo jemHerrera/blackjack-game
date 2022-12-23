@@ -21,34 +21,20 @@
 
 			// value of the hand where ace is just == 1
 			const baseScore = hand.reduce((a,b) =>  a + getCardValue(b), 0);
-			// amount of aces in the hand. 
 			const aceCount = hand.filter((card) => card.value == 'ACE').length;
 
 			if(aceCount > 0){
-				// potential values of the hand with all the ace values.
+				// potential values of the hand with all the ace values. Values increment by 10 for each ace in the hand
 				const potentialHands = [];
+				for(let i = 0; i <= aceCount; i++) potentialHands.push(baseScore + (i * 10))
 
-				// Values increment by 10 for each ace in the hand
-				for(let i = 0; i <= aceCount; i++){
-					potentialHands.push(baseScore + (i * 10))
-				}
-				
 				//filter scores > 21
 				const playableHands = potentialHands.filter(score => score <= 21)
-				//if all scores are > 21, best score becomes 22(BUST); else find the highest score
-				const bestHand = playableHands.length > 0 ? playableHands.reduce((a,b) => Math.max(a,b)) : 22;
-
-				// return the best hand (resolved)
-				return resolveHand(bestHand)
+				//if all scores are > 21(bust), best score becomes lowest value from potential hands; else find the highest value from playable hands
+				return playableHands.length > 0 ? playableHands.reduce((a,b) => Math.max(a,b)) : potentialHands.reduce((a,b) => Math.min(a,b));
 			}
 
-			return resolveHand(baseScore)
-
-			function resolveHand(handScore){
-				if(handScore > 21) return 'BUST';
-				else if(handScore == 21) return 'BLACK JACK';
-				return handScore
-			}
+			return baseScore
 
 			function getCardValue(card){
 				if(['JACK', 'QUEEN', 'KING'].find(royal => card.value == royal)) return 10;
@@ -68,17 +54,25 @@
 			.then(() => wait(300, () => player.addCard(b)))
 			.then(() => wait(300, () => dealer.addCard(c)))
 			.then(() => wait(300, () => player.addCard(d)))
-			.finally(() => wait(500, () => checkResult((value) => endPhase(value), playPhase)))
+			.finally(() => wait(500, evaluatePlayerCards))
 		})
 	}
 
-	function endPhase(result){
-		gameSequence.current = 'end';
-		gameResult.value = result;
-	}
+	function revealPhase(){
+		dealer.hand[0].facedown = false;
+		gameSequence.current = 'reveal';
+		dealerDraw();
 
-	function playPhase(){
-		gameSequence.current = 'play';
+		function dealerDraw(){
+			if(handScores.value.dealer >= 17) return wait(300, evaluateDealerCards);
+			wait(300, () => {
+				deck.draw(1, (response) => {
+					const [ card ] = response.cards;
+					dealer.addCard(card);
+					dealerDraw();
+				})
+			})
+		}
 	}
 
 	function newGame(){
@@ -88,9 +82,24 @@
 		wait(500, dealPhase);
 	}
 
-	function checkResult(resolve, reject){
-		if(isNaN(handScores.value.player)) resolve(handScores.value.player);
-		else reject()
+	function evaluatePlayerCards(){
+		if(handScores.value.player > 21) endGame('BUST');
+		else if(handScores.value.player == 21) revealPhase();
+		else gameSequence.current = 'play';
+	}
+
+	function evaluateDealerCards(){
+		if(handScores.value.player == 21 && handScores.value.dealer != 21) endGame('BLACK JACK');
+		else if(handScores.value.player > handScores.value.dealer || handScores.value.dealer > 21) endGame('WIN');
+		else if(handScores.value.player < handScores.value.dealer) endGame('LOSE');
+		else endGame('PUSH');
+	}
+
+	function endGame(result){
+		wait(300, () => {
+			gameSequence.current = 'end';
+			gameResult.value = result;
+		})
 	}
 
 	function wait(ms, callback){
@@ -102,7 +111,7 @@
 		})
 	}
 
-	onMounted(() => deck.newDeck().then(dealPhase))
+	deck.newDeck().then(dealPhase);
 	
 	</script>
 
@@ -118,9 +127,18 @@
 				</TransitionGroup>
 				<span 
 					id="dealer-score" 
-					class="score" 
-					v-if="gameSequence.current == 'reveal' || gameSequence.current == 'end'">
-					{{ handScores.player }}
+					:class="[
+						'score',
+						{
+							'blackjack': handScores.dealer == 21,
+							'bust': handScores.dealer > 21
+						}
+					]" 
+					v-if="
+					dealer.hand.length > 0 &&
+					(gameSequence.current == 'reveal' || gameSequence.current == 'end') &&
+					gameResult != 'BUST'">
+					{{ handScores.dealer }}
 				</span>
 			</div>
 
@@ -137,22 +155,24 @@
 					:key="card.code"
 					/>
 				</TransitionGroup>
-				<span id="player-score" class="score" v-if="gameSequence.current != 'deal'">{{ handScores.player }}</span>
-			</div>
-
-			<div id="player-wager">
-				<img 
-				src="/images/chip-green.png" 
-				class="chip" 
-				v-for="wager in player.wager" 
-				:key="wager"
-				/>
+				<span 
+					id="player-score" 
+					:class="[
+						'score',
+						{
+							'blackjack': handScores.player == 21,
+							'bust': handScores.player > 21
+						}
+					]" 
+					v-if="gameSequence.current != 'deal' && player.hand.length > 0">
+					{{ handScores.player }}
+				</span>
 			</div>
 
 			<PlayerActions
 				:class="{active : gameSequence.current == 'play'}"
-				@check-result="checkResult((value) => endPhase(value), playPhase)"
-				:wait="wait"
+				@check-hit="evaluatePlayerCards"
+				@stand="revealPhase"
 			/>
 
 			<Results 
@@ -195,28 +215,25 @@
 			}
 
 			.score{
-					position: absolute;
-					border: 2px solid black;
-					@include flex($align:center, $justify: center);
-					font-size: 1.5rem;
-					width: 3rem;
-					height: 3rem;
-					border-radius: 3rem;
-					right: -1.5rem;
-					top: -1.5rem;
-					background: white;
-				}
-		}
+				position: absolute;
+				@include flex($align:center, $justify: center);
+				font-size: 1.5rem;
+				font-weight: 600;
+				width: 3rem;
+				height: 3rem;
+				border-radius: 3rem;
+				right: -1.5rem;
+				top: -1.5rem;
+				background: white;
 
-		#player-wager{
-			@include flex($justify: center, $gap: 1rem);
-			font-size: 2rem;
-			.chip{
-				height: 2.5em;
+				&.blackjack{
+					background-color: $color-blackjack;
+				}
+				&.bust{
+					background-color: $color-lose;
+				}
 			}
 		}
-
-
 	}
 
 	</style>
