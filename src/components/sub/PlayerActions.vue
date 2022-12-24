@@ -1,8 +1,6 @@
 	<script setup>
 	import { deck } from '../stores/deck';
-	import { dealer } from '../stores/dealer';
 	import { player } from '../stores/player';
-	import { gameSequence } from '../stores/gameSequence';
 
 	const emits = defineEmits(['checkHit', 'stand'])
 
