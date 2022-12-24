@@ -1,110 +1,13 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { deck } from '../stores/deck'
+import { game } from '../stores/game'
 import { player } from '../stores/player'
 import { dealer } from '../stores/dealer'
-import { game } from '../stores/game'
-import { wait } from '../../utils/utils.js'
 
 import Card from '../sub/Card.vue'
 import Results from '../sub/Results.vue'
 import PlayerActions from '../sub/PlayerActions.vue'
 
-const gameResult = ref('');
-
-const handScores = computed(() => {
-	return {
-		player: getHandScore(player.hand),
-		dealer: getHandScore(dealer.hand)
-	}
-
-	function getHandScore(hand){
-		if(hand.length < 2) return null;
-
-		// value of the hand where ace is just == 1
-		const baseScore = hand.reduce((a,b) =>  a + getCardValue(b), 0);
-		const aceCount = hand.filter((card) => card.value == 'ACE').length;
-
-		if(aceCount > 0){
-			// potential values of the hand with all the ace values. Values increment by 10 for each ace in the hand
-			const potentialHands = [];
-			for(let i = 0; i <= aceCount; i++) potentialHands.push(baseScore + (i * 10))
-
-			//filter scores > 21
-			const playableHands = potentialHands.filter(score => score <= 21)
-			//if all scores are > 21(bust), best score becomes lowest value from potential hands; else find the highest value from playable hands
-			return playableHands.length > 0 ? playableHands.reduce((a,b) => Math.max(a,b)) : potentialHands.reduce((a,b) => Math.min(a,b));
-		}
-
-		return baseScore
-
-		function getCardValue(card){
-			if(['JACK', 'QUEEN', 'KING'].find(royal => card.value == royal)) return 10;
-			else if(card.value == 'ACE') return 1;
-			else return Number(card.value);
-		}
-	}
-})
-
-function dealPhase(){
-	game.phase = 'deal';
-	
-	deck.draw(4, (response) => {
-		const [ a, b, c, d] = response.cards;
-
-		wait(0, () => dealer.addCard(a, true))
-		.then(() => wait(300, () => player.addCard(b)))
-		.then(() => wait(300, () => dealer.addCard(c)))
-		.then(() => wait(300, () => player.addCard(d)))
-		.finally(() => wait(500, evaluatePlayerCards))
-	})
-}
-
-function revealPhase(){
-	dealer.hand[0].facedown = false;
-	game.phase = 'reveal';
-	dealerDraw();
-
-	function dealerDraw(){
-		if(handScores.value.dealer >= 17) return wait(300, evaluateDealerCards);
-		wait(300, () => {
-			deck.draw(1, (response) => {
-				const [ card ] = response.cards;
-				dealer.addCard(card);
-				dealerDraw();
-			})
-		})
-	}
-}
-
-function newGame(){
-	player.reset();
-	dealer.reset();
-	gameResult.value = '';
-	wait(500, dealPhase);
-}
-
-function evaluatePlayerCards(){
-	if(handScores.value.player > 21) endGame('BUST');
-	else if(handScores.value.player == 21) revealPhase();
-	else game.phase = 'play';
-}
-
-function evaluateDealerCards(){
-	if(handScores.value.player == 21 && handScores.value.dealer != 21) endGame('BLACK JACK');
-	else if(handScores.value.player > handScores.value.dealer || handScores.value.dealer > 21) endGame('WIN');
-	else if(handScores.value.player < handScores.value.dealer) endGame('LOSE');
-	else endGame('PUSH');
-}
-
-function endGame(result){
-	wait(300, () => {
-		game.phase = 'end';
-		gameResult.value = result;
-	})
-}
-
-deck.newDeck().then(dealPhase);
+game.gameStart();
 </script>
 
 <template>
@@ -122,15 +25,15 @@ deck.newDeck().then(dealPhase);
 				:class="[
 					'score',
 					{
-						'blackjack': handScores.dealer == 21,
-						'bust': handScores.dealer > 21
+						'blackjack': dealer.score == 21,
+						'bust': dealer.score > 21
 					}
 				]" 
 				v-if="
 				dealer.hand.length > 0 &&
 				(game.phase == 'reveal' || game.phase == 'end') &&
-				gameResult != 'BUST'">
-				{{ handScores.dealer }}
+				game.result != 'BUST'">
+				{{ dealer.score }}
 			</span>
 		</div>
 
@@ -152,24 +55,24 @@ deck.newDeck().then(dealPhase);
 				:class="[
 					'score',
 					{
-						'blackjack': handScores.player == 21,
-						'bust': handScores.player > 21
+						'blackjack': player.score == 21,
+						'bust': player.score > 21
 					}
 				]" 
 				v-if="game.phase != 'deal' && player.hand.length > 0">
-				{{ handScores.player }}
+				{{ player.score }}
 			</span>
 		</div>
 
 		<PlayerActions
 			:class="{active : game.phase == 'play'}"
-			@check-hit="evaluatePlayerCards"
-			@stand="revealPhase"
+			@check-hit="game.hit()"
+			@stand="game.reveal()"
 		/>
 
 		<Results 
-			:game-result="gameResult"
-			@new-game="newGame()"
+			:game-result="game.result"
+			@new-game="game.newGame()"
 		/>
 	</div>
 </template>
