@@ -1,6 +1,4 @@
 <script setup>
-    import { computed } from 'vue';
-
     const props = defineProps({
         card: Object
     })
@@ -22,6 +20,8 @@
         width: 8.5em;
         border-radius: 0.5em;
         overflow: hidden;
+
+        transition: all 0.3s;
 
         img{
             transition: all 300ms ease;

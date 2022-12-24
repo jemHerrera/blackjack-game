@@ -27,6 +27,8 @@
         height: 100%;
         max-width: 360px;
         z-index: 2;
+        margin-left: -90%;
+        transition: margin-left 0.3s ease;
 
         .settings-container{
             position: relative;
@@ -96,10 +98,16 @@
         
         @include mdpi-up{
             position: relative;
+            display: block;
+            margin-left: 0;
             
             .settings-container{
                 width: 100%;
             }
+        }
+
+        &.show{
+            margin-left: 0;
         }
     }
 </style>
