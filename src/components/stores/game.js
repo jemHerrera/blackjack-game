@@ -1,7 +1,7 @@
 import { reactive } from 'vue';
 import { wait } from '../../utils.js';
 import { loadDeck, draw } from '../../deckService.js'
-import { player, dealer } from './index';
+import { player, dealer } from './';
 
 export const game = reactive({
     phase: '',
@@ -22,11 +22,11 @@ export const game = reactive({
 
         const [ a, b, c, d] = this.deck.cards;
 
-        wait(0, () => dealer.addCard(a, true))
-		.then(() => wait(300, () => player.addCard(b)))
-		.then(() => wait(300, () => dealer.addCard(c)))
-		.then(() => wait(300, () => player.addCard(d)))
-        .finally(() => wait(500, () => this.evaluatePlayerCards()));
+        await wait(0, () => dealer.addCard(a, true))
+		await wait(300, () => player.addCard(b))
+		await wait(300, () => dealer.addCard(c))
+		await wait(300, () => player.addCard(d))
+        await wait(500, () => this.evaluatePlayerCards())
     },
     evaluatePlayerCards(){
         if(player.score > 21) this.endGame('BUST');
@@ -45,7 +45,8 @@ export const game = reactive({
 
         const [ card ] = this.deck.cards;
         dealer.addCard(card);
-        this.dealerDraw();
+
+        await wait(500, () => this.dealerDraw());
     },
     evaluateDealerCards(){
         if(player.score == 21 && dealer.score != 21) this.endGame('BLACK JACK');
@@ -68,6 +69,6 @@ export const game = reactive({
         dealer.hand = [];
         this.phase = '';
         this.result = '';
-        wait(500, () => this.deal());
+        await wait(500, () => this.deal())
     }
 });

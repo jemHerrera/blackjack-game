@@ -1,7 +1,10 @@
-async function wait (ms, callback){
-	setTimeout(() => {
-		callback();
-	}, ms)
+function wait (ms, callback){
+	return new Promise((resolve) => {
+		setTimeout(() => {
+			callback();
+			resolve();
+		}, ms)
+	})
 }
 
 function getCardValue(card){
