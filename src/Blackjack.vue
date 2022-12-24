@@ -1,33 +1,18 @@
 <script setup>
-  import { ref, onMounted } from 'vue';
+  import { ref } from 'vue';
   import Game from './components/main/Game.vue'
   import Settings from './components/main/Settings.vue'
   import ShootingStarBackground from './components/main/ShootingStarBackground.vue';
 
-  const settingsToggle = ref(false);
-
-  function setup(){
-    let width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-    
-    if(width > 1200){
-      settingsToggle.value = true;
-    }
-  }
-
-  onMounted(setup);
+  const showSettings = ref(false);
 
 </script>
 
 <template>
-  <transition name="settings">
-    <Settings 
-      @close="settingsToggle = false"
-      v-show="settingsToggle"
-    />
-  </transition>
+  <Settings :class="{ 'show': showSettings}" @close="showSettings = !showSettings"/>
   <Game  />
-  <button class="button-settings" @click="settingsToggle = !settingsToggle">
-    <span v-if="!settingsToggle" class="material-icons">settings</span>
+  <button class="button-settings" @click="showSettings = !showSettings">
+    <span v-if="!showSettings" class="material-icons">settings</span>
     <span v-else class="material-icons">close</span>
   </button>
   <ShootingStarBackground/>
