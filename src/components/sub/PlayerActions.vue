@@ -1,10 +1,22 @@
 <script setup>
+	import { computed } from 'vue';
 	import { player } from '../stores/player';
+	import { game } from '../stores'
 
-	const emits = defineEmits(['checkHit', 'stand'])
+	const emits = defineEmits(['hit', 'stand', 'doubleDown'])
+
+	const chipAnimation = computed(() => {
+		if(game.phase == 'end') return 'chipout'
+		return 'chipin';
+	})
+
+	const splitAvailable = computed(() => {
+		return player.hand.length == 2 &&
+		player.hand[0].value == player.hand[1].value
+	})
 
 	function doubleDown(){
-		
+		emits('doubleDown');
 	}
 	function split(){
 		
@@ -13,24 +25,24 @@
 		emits('stand');
 	}
 	function hit(){
-		emits('checkHit');
+		emits('hit');
 	}
 
 </script>
 
 <template>
 	<div id="player-actions">
-		<div id="player-wager">
+		<transition-group :name="chipAnimation" tag="div" id="player-wager">
 			<img 
 			src="/images/chip-green.png" 
 			class="chip" 
-			v-for="wager in player.wager" 
-			:key="wager"
+			v-for="(wager, index) in player.wager" 
+			:key="index"
 			/>
-		</div>
+		</transition-group>
 		<div class="user-controls">
-			<button id="double-down" @click="doubleDown">Double Down</button>
-			<button id="split" @click="split">Split</button>
+			<button :class="{'active': player.hand.length == 2}" id="double-down" @click="doubleDown">Double Down</button>
+			<button :class="{'active': splitAvailable}" id="split" @click="split">Split</button>
 			<div id="chips">
 				<span class="coin-icon"><img src="/images/chip-green.png"/></span>
 				<span class="material-icons">clear</span>
@@ -57,7 +69,8 @@
 				@include flex($justify: center, $gap: 1rem);
 				font-size: 2rem;
 				.chip{
-					height: 2.5em;
+					height: 2em;
+					transition: all 0.5s ease;
 				}
 			}
 			.user-controls{
@@ -72,17 +85,29 @@
 					cursor: pointer;
 					opacity: 0.3;
 					transition: all 300ms ease;
+
+					&#doubledown, &#split{
+						opacity: 0.3;
+						pointer-events: none;
+
+						&.active{
+							opacity:1;
+							pointer-events: visible;
+						}
+					}
 				}
 
 				#chips{
 					@include flex($align:center, $gap: 0.5em);
 					*{color: white}
 					font-size: 1.5rem;
+					position: relative;
 
-					.coin-icon{
-						img{
-							height: 2em;
-						}
+					.coin-icon img{
+						height: 2em;
+					}
+					.coin-quantity{
+						font-size: 1.5em;
 					}
 				}
 			}

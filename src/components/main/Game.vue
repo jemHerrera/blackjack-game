@@ -54,15 +54,16 @@ game.gameStart();
 						'bust': player.score > 21
 					}
 				]" 
-				v-if="game.phase != 'deal' && player.hand.length > 0">
+				v-if="game.phase && game.phase != 'deal' && player.hand.length > 0">
 				{{ player.score }}
 			</span>
 		</div>
 
 		<PlayerActions
 			:class="{active : game.phase == 'play'}"
-			@check-hit="game.hit()"
-			@stand="game.reveal()"
+			@hit="player.hit()"
+			@stand="game.playDealerHand()"
+			@doubleDown="player.doubleDown()"
 		/>
 
 		<Results 

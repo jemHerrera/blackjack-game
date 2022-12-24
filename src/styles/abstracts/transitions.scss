@@ -5,7 +5,6 @@
 .fade-enter-active, .fade-leave-active {
   	transition: opacity 200ms ease-out;
 }
-
 .card-enter-from, 
 .card-leave-to {
   opacity: 0;
@@ -13,5 +12,19 @@
 }
 .card-leave-active {
   transition: all 0.3s ease;
+  position: absolute;
+}
+.chipout-enter-from, 
+.chipout-leave-to {
+  opacity: 0;
+  transform: translateY(-600px);
+}
+.chipin-enter-from, 
+.chipin-leave-to {
+  opacity: 0;
+  transform: translateY(300px);
+}
+.chipin-leave-active, .chipout-leave-active {
+  transition: all 0.5s ease;
   position: absolute;
 }

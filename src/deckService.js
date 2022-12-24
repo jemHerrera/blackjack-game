@@ -20,7 +20,7 @@ async function draw(deckId, count) {
         };
         return res;
     })
-
+    
     return await response;
 }
 

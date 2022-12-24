@@ -11,7 +11,8 @@ export const game = reactive({
     async gameStart(){
         this.phase = 'deal';
         this.deck = await loadDeck();
-        await this.deal();
+        player.placeWager(2);
+        this.deal();
     },
     async draw(count = 1){
         const cardDraw = await draw(this.deck.deck_id, count);
@@ -28,25 +29,15 @@ export const game = reactive({
 		await wait(300, () => player.addCard(d))
         await wait(500, () => this.evaluatePlayerCards())
     },
-    evaluatePlayerCards(){
+    evaluatePlayerCards(noResultCallback = () => game.phase = 'play'){
         if(player.score > 21) this.endGame('BUST');
-	    else if(player.score == 21) this.reveal();
-	    else this.phase = 'play';
+	    else if(player.score == 21) this.playDealerHand();
+	    else noResultCallback();
     },
-    reveal(){
-        dealer.revealHand();
+    async playDealerHand(){
         this.phase = 'reveal';
-        this.dealerDraw();
-    },
-    async dealerDraw(){
-        if(dealer.score >= 17) return this.evaluateDealerCards();
-        
-        await this.draw();
-
-        const [ card ] = this.deck.cards;
-        dealer.addCard(card);
-
-        await wait(500, () => this.dealerDraw());
+        await wait(500, () => dealer.revealHand());
+        wait(1000, () => dealer.dealerDraw());
     },
     evaluateDealerCards(){
         if(player.score == 21 && dealer.score != 21) this.endGame('BLACK JACK');
@@ -54,21 +45,16 @@ export const game = reactive({
         else if(player.score < dealer.score) this.endGame('LOSE');
         else this.endGame('PUSH');
     },
-    async hit(){
-        await this.draw();
-        const [ card ] = this.deck.cards;
-        player.addCard(card);
-        this.evaluatePlayerCards();
-    },
     endGame(result){
         this.phase = 'end';
         this.result = result;
+        wait(300, () => player.evaluateChips(result));
     },
-    async newGame(){
-        player.hand = [];
-        dealer.hand = [];
+    newGame(){
         this.phase = '';
         this.result = '';
-        await wait(500, () => this.deal())
+        player.reset();
+        dealer.reset();
+        wait(500, () => this.deal())
     }
 });

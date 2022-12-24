@@ -1,5 +1,6 @@
 import { reactive } from 'vue';
-import { getHandScore } from '../../utils';
+import { getHandScore, wait } from '../../utils';
+import { game } from '../stores';
 
 export const dealer = reactive({
 	hand: [],
@@ -14,5 +15,12 @@ export const dealer = reactive({
 	},
 	reset(){
 		this.hand = [];
-	}
+	},
+    async dealerDraw(){
+        if(this.score >= 17) return game.evaluateDealerCards();
+        await game.draw();
+        const [ card ] = game.deck.cards;
+        this.addCard(card);
+        wait(500, () => this.dealerDraw());
+    }
 })
