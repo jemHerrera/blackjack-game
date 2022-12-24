@@ -66,16 +66,22 @@
 			}
 
 			#player-wager{
-				@include flex($justify: center, $gap: 1rem);
+				@include flex($justify: center);
 				font-size: 2rem;
+				height: 2em;
+
 				.chip{
-					height: 2em;
+					height: inherit;
+					margin-left: -2rem;
 					transition: all 0.5s ease;
 				}
 			}
 			.user-controls{
-				@include flex($justify:center, $gap: 1.5rem);
+				display: grid;
+				grid-template-columns: repeat(5, 1fr);
+				grid-gap: 1.5rem;
 				pointer-events: none;
+				justify-content: center;
 
 				button{
 					flex: 1;
@@ -83,11 +89,14 @@
 					font-size: 1.5rem;
 					text-transform: uppercase;
 					cursor: pointer;
-					opacity: 0.3;
-					transition: all 300ms ease;
+					opacity: 0.1;
+					background: $color-glight1;
+					border-radius: 1rem;
+					color: white;
+					font-weight: 600;
 
-					&#doubledown, &#split{
-						opacity: 0.3;
+					&#double-down, &#split{
+						opacity: 0.1;
 						pointer-events: none;
 
 						&.active{
@@ -95,13 +104,20 @@
 							pointer-events: visible;
 						}
 					}
+					
+					&:hover{
+						background-color: $color-glight2;
+					}
 				}
 
 				#chips{
-					@include flex($align:center, $gap: 0.5em);
+					@include flex($align:center, $justify:center, $gap: 0.5em);
 					*{color: white}
 					font-size: 1.5rem;
 					position: relative;
+					// background: $color-gdark2;
+					border: 3px solid $color-gdark2;
+					border-radius: 999px;
 
 					.coin-icon img{
 						height: 2em;

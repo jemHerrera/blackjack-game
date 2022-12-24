@@ -92,7 +92,7 @@ game.gameStart();
 		}
 		
 		.hand{
-			@include flex($gap: 0.25em);
+			@include flex($gap: 0.5rem);
 
 			&#dealer-hand{
 				font-size: 0.9rem;
