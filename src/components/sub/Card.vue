@@ -21,6 +21,8 @@
         border-radius: 0.5em;
         overflow: hidden;
 
+        transition: all 0.3s;
+
         img{
             transition: all 300ms ease;
             width: 100%;

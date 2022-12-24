@@ -22,7 +22,7 @@ export const game = reactive({
 
         const [ a, b, c, d] = this.deck.cards;
 
-        await wait(0, () => dealer.addCard(a, true))
+        dealer.addCard(a, true)
 		await wait(300, () => player.addCard(b))
 		await wait(300, () => dealer.addCard(c))
 		await wait(300, () => player.addCard(d))
