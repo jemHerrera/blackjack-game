@@ -3,7 +3,9 @@ import { ref, computed } from 'vue'
 import { deck } from '../stores/deck'
 import { player } from '../stores/player'
 import { dealer } from '../stores/dealer'
-import { gameSequence } from '../stores/gameSequence'
+import { game } from '../stores/game'
+import { wait } from '../../utils/utils.js'
+
 import Card from '../sub/Card.vue'
 import Results from '../sub/Results.vue'
 import PlayerActions from '../sub/PlayerActions.vue'
@@ -45,7 +47,7 @@ const handScores = computed(() => {
 })
 
 function dealPhase(){
-	gameSequence.current = 'deal';
+	game.phase = 'deal';
 	
 	deck.draw(4, (response) => {
 		const [ a, b, c, d] = response.cards;
@@ -60,7 +62,7 @@ function dealPhase(){
 
 function revealPhase(){
 	dealer.hand[0].facedown = false;
-	gameSequence.current = 'reveal';
+	game.phase = 'reveal';
 	dealerDraw();
 
 	function dealerDraw(){
@@ -85,7 +87,7 @@ function newGame(){
 function evaluatePlayerCards(){
 	if(handScores.value.player > 21) endGame('BUST');
 	else if(handScores.value.player == 21) revealPhase();
-	else gameSequence.current = 'play';
+	else game.phase = 'play';
 }
 
 function evaluateDealerCards(){
@@ -97,17 +99,8 @@ function evaluateDealerCards(){
 
 function endGame(result){
 	wait(300, () => {
-		gameSequence.current = 'end';
+		game.phase = 'end';
 		gameResult.value = result;
-	})
-}
-
-function wait(ms, callback){
-	return new Promise(resolve => {
-		setTimeout(() => {
-			callback();
-			resolve();
-		}, ms)
 	})
 }
 
@@ -135,7 +128,7 @@ deck.newDeck().then(dealPhase);
 				]" 
 				v-if="
 				dealer.hand.length > 0 &&
-				(gameSequence.current == 'reveal' || gameSequence.current == 'end') &&
+				(game.phase == 'reveal' || game.phase == 'end') &&
 				gameResult != 'BUST'">
 				{{ handScores.dealer }}
 			</span>
@@ -145,7 +138,7 @@ deck.newDeck().then(dealPhase);
 			id="player-hand-container"
 			ref="playerRef" 
 			:class="['hand-container',{
-				'card-zoom': gameSequence.current == 'play'
+				'card-zoom': game.phase == 'play'
 			}]">
 			<TransitionGroup name="card" id="player-hand" class="hand" tag="ul">
 				<Card 
@@ -163,13 +156,13 @@ deck.newDeck().then(dealPhase);
 						'bust': handScores.player > 21
 					}
 				]" 
-				v-if="gameSequence.current != 'deal' && player.hand.length > 0">
+				v-if="game.phase != 'deal' && player.hand.length > 0">
 				{{ handScores.player }}
 			</span>
 		</div>
 
 		<PlayerActions
-			:class="{active : gameSequence.current == 'play'}"
+			:class="{active : game.phase == 'play'}"
 			@check-hit="evaluatePlayerCards"
 			@stand="revealPhase"
 		/>
