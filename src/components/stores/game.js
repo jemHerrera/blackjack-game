@@ -1,8 +1,7 @@
 import { reactive } from 'vue';
 import { wait } from '../../utils.js';
 import { loadDeck, draw } from '../../deckService.js'
-import { player } from './player.js';
-import { dealer } from './dealer.js';
+import { player, dealer } from './index';
 
 export const game = reactive({
     phase: '',
@@ -20,7 +19,7 @@ export const game = reactive({
     },
     async deal(){
         await this.draw(4);
-        
+
         const [ a, b, c, d] = this.deck.cards;
 
         wait(0, () => dealer.addCard(a, true))

@@ -1,11 +1,6 @@
 <script setup>
-import { game } from '../stores/game'
-import { player } from '../stores/player'
-import { dealer } from '../stores/dealer'
-
-import Card from '../sub/Card.vue'
-import Results from '../sub/Results.vue'
-import PlayerActions from '../sub/PlayerActions.vue'
+import { player, dealer, game } from '../stores/'
+import { Card, Results, PlayerActions } from '../sub'
 
 game.gameStart();
 </script>
