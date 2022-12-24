@@ -12,5 +12,5 @@ export const player = reactive({
 	reset(){
 		this.hand = [];
 		this.wager = 1;
-	}
+	},
 })

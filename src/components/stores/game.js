@@ -14,10 +14,13 @@ export const game = reactive({
         this.deck = await loadDeck();
         await this.deal();
     },
-    async deal(){
-        const cardDraw = await draw(this.deck.deck_id, 4);
+    async draw(count = 1){
+        const cardDraw = await draw(this.deck.deck_id, count);
         this.deck = {...cardDraw};
-
+    },
+    async deal(){
+        await this.draw(4);
+        
         const [ a, b, c, d] = this.deck.cards;
 
         wait(0, () => dealer.addCard(a, true))
@@ -38,8 +41,8 @@ export const game = reactive({
     },
     async dealerDraw(){
         if(dealer.score >= 17) return this.evaluateDealerCards();
-        const cardDraw = await draw(this.deck.deck_id, 1);
-        this.deck = {...cardDraw};
+        
+        await this.draw();
 
         const [ card ] = this.deck.cards;
         dealer.addCard(card);
@@ -52,9 +55,7 @@ export const game = reactive({
         else this.endGame('PUSH');
     },
     async hit(){
-        const cardDraw = await draw(this.deck.deck_id, 1);
-        this.deck = {...cardDraw};
-
+        await this.draw();
         const [ card ] = this.deck.cards;
         player.addCard(card);
         this.evaluatePlayerCards();
