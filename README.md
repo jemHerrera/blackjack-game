@@ -9,6 +9,11 @@ A simple game of Black Jack powered by Vue and
 ```
 <!-- Build -->
 npm run build
+<!-- Set vite config base -->
+
+export default defineConfig({
+    base:'/blackjack-game/'
+})
 
 <!-- Push to gh-pages branch -->
 git add dist -f
