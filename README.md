@@ -1,7 +1,17 @@
-# Vue 3 + Vite
+# BLACK JACK GAME using Vue 3 + Vite
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+A simple game of Black Jack powered by Vue and 
+[Deck of Cards API](https://www.deckofcardsapi.com/). The player can play basic Black Jack actions such as Hit, Stand and Double Down. Split action coming soon. The main deck is composed of 6 decks total and reshuffles everytime remaining cards go down to less than 100.
 
-## Recommended IDE Setup
+## Github pages hosting Vite tutorial
+[Youtube Tutorial here](https://www.youtube.com/watch?v=yo2bMGnIKE8)
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
+```
+<!-- Build -->
+npm run build
+
+<!-- Push to gh-pages branch -->
+git add dist -f
+git commit -m "gh commit"
+git subtree push --prefix dist origin gh-pages
+```

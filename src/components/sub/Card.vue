@@ -48,6 +48,7 @@
 
         @include media-xs{
             margin-left: -5em;
+            box-shadow: rgb(0 0 0) 3.95px -3.95px 10.6px;
         }
     }
 </style>
