@@ -5,13 +5,14 @@ import { game } from '../stores';
 export const player = reactive({
 	hand: [],
 	score: 0,
-	chips: 24,
+	chips: 14,
 	wager: 0,
 	addCard(card){
 		this.hand.push(card);
 		this.score = getHandScore(this.hand);
 	},
 	reset(){
+		if(player.chips < 1) player.chips = 14;
 		this.collectWager();
 		this.hand = [];
 		wait(500, () => {

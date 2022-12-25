@@ -2,8 +2,10 @@
 	import { computed } from 'vue';
 
 	const props = defineProps({
-		gameResult: String
+		gameResult: String,
+		playerChips: Number
 	})
+	defineEmits(['new-round'])
 
 	const classes = computed(() => {
 		return {
@@ -12,15 +14,17 @@
 		}
 	})
 
-	defineEmits(['newGame'])
 
 </script>
 
 <template>
 	<transition name="fade">
-    <div v-if="gameResult" id="result-overlay" @click="$emit('newGame')">
+    <div v-if="gameResult" id="result-overlay" @click="$emit('new-round')">
 		<h2 :class="classes">{{ gameResult }}</h2>
-		<p>Click anywhere to continue</p>
+		<p v-if="playerChips > 0">Click anywhere to continue</p>
+		<div v-else class="out-of-chips-container">
+			<p>You are out of chips! Click anywhere to restart the game.</p>
+		</div>
 	</div>
 	</transition>
 </template>
@@ -40,6 +44,7 @@
 			h2{
 				font-size: 4rem;
 				color: white;
+				text-align:center;
 
 				&.blackjack{
 					color: $color-blackjack;

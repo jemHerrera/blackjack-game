@@ -26,6 +26,7 @@
     height: 100vh;
     width: 100vw;
     @include flex;
+    background-color: $color-gdark0;
 
     .button-settings{
       position: fixed;
@@ -44,6 +45,6 @@
         display: none;
       }
     }
-    
+
   }
 </style>

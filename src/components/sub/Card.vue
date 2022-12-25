@@ -45,5 +45,9 @@
         &.enlarge{
             transform:scale(1.25);
         }
+
+        @include media-xs{
+            margin-left: -5em;
+        }
     }
 </style>

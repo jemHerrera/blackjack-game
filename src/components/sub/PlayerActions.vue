@@ -34,17 +34,17 @@
 	<div id="player-actions">
 		<transition-group :name="chipAnimation" tag="div" id="player-wager">
 			<img 
-			src="/images/chip-green.png" 
+			src="/images/chip-vue.png" 
 			class="chip" 
 			v-for="(wager, index) in player.wager" 
 			:key="index"
 			/>
 		</transition-group>
 		<div class="user-controls">
-			<button :class="{'active': player.hand.length == 2}" id="double-down" @click="doubleDown">Double Down</button>
-			<button :class="{'active': splitAvailable}" id="split" @click="split">Split</button>
+			<button :class="{'active': player.hand.length == 2 && player.chips >= 2}" id="double-down" @click="doubleDown">Double Down</button>
+			<button id="split" @click="split"><span>Split</span><span class="coming-soon">Coming Soon</span></button>
 			<div id="chips">
-				<span class="coin-icon"><img src="/images/chip-green.png"/></span>
+				<span class="coin-icon"><img src="/images/chip-vue.png"/></span>
 				<span class="material-icons">clear</span>
 				<span class="coin-quantity">{{player.chips}}</span>
 			</div>
@@ -55,77 +55,120 @@
 </template>
 
 <style lang="scss">
-		@use '../../styles/abstracts' as *;
+@use '../../styles/abstracts' as *;
 
-		#player-actions{
-			@include flex($direction:column, $align:center, $gap:3rem);
+#player-actions{
+	@include flex($direction:column, $align:center, $gap:3rem);
 
-			&.active .user-controls button{
-				opacity:1;
-				pointer-events: visible;
-			}
+	&.active .user-controls button{
+		opacity:1;
+		pointer-events: visible;
+	}
 
-			#player-wager{
-				@include flex($justify: center);
-				font-size: 2rem;
-				height: 2em;
+	#player-wager{
+		@include flex($justify: center);
+		font-size: 2rem;
+		height: 2em;
+		margin-left: 2rem;
 
-				.chip{
-					height: inherit;
-					margin-left: -2rem;
-					transition: all 0.5s ease;
-				}
-			}
-			.user-controls{
-				display: grid;
-				grid-template-columns: repeat(5, 1fr);
-				grid-gap: 1.5rem;
+		.chip{
+			height: inherit;
+			margin-left: -2rem;
+			transition: all 0.5s ease;
+		}
+	}
+	.user-controls{
+		display: grid;
+		grid-template-columns: repeat(5, 1fr);
+		grid-gap: 1.5rem;
+		pointer-events: none;
+		justify-content: center;
+		position: relative;
+
+		button{
+			flex: 1;
+			padding: 1em;
+			font-size: 1.5rem;
+			text-transform: uppercase;
+			cursor: pointer;
+			opacity: 0.1;
+			background: $color-glight1;
+			border-radius: 1rem;
+			color: white;
+			font-weight: 600;
+
+			&#double-down, &#split{
+				opacity: 0.1;
 				pointer-events: none;
-				justify-content: center;
+				@include flex($direction:column, $align:center, $justify:center, $gap: 0.2em);
 
-				button{
-					flex: 1;
-					padding: 1em;
-					font-size: 1.5rem;
-					text-transform: uppercase;
-					cursor: pointer;
-					opacity: 0.1;
-					background: $color-glight1;
-					border-radius: 1rem;
-					color: white;
-					font-weight: 600;
-
-					&#double-down, &#split{
-						opacity: 0.1;
-						pointer-events: none;
-
-						&.active{
-							opacity:1;
-							pointer-events: visible;
-						}
-					}
-					
-					&:hover{
-						background-color: $color-glight2;
-					}
+				&.active{
+					opacity:1;
+					pointer-events: visible;
 				}
 
-				#chips{
-					@include flex($align:center, $justify:center, $gap: 0.5em);
-					*{color: white}
-					font-size: 1.5rem;
-					position: relative;
-					// background: $color-gdark2;
-					border: 3px solid $color-gdark2;
-					border-radius: 999px;
-
-					.coin-icon img{
-						height: 2em;
-					}
-					.coin-quantity{
-						font-size: 1.5em;
-					}
+				span.coming-soon{
+					font-size: 0.7em;
+					font-style: italic;
 				}
+			}
+			
+			&:hover{
+				background-color: $color-glight2;
 			}
 		}
+
+		#chips{
+			@include flex($align:center, $justify:center, $gap: 0.5em);
+			*{color: white}
+			font-size: 1.5rem;
+			position: relative;
+			border: 3px solid $color-gdark2;
+			border-radius: 999px;
+
+			.coin-icon img{
+				height: 2em;
+			}
+			.coin-quantity{
+				font-size: 1.5em;
+			}
+		}
+
+		@include media-l{
+			button{
+				font-size: 1rem;
+			}
+			#chips{
+				font-size: 1rem;
+			}
+		}
+
+		@include media-s{
+			grid-gap: 0.5rem;
+			#chips{
+				font-size: 0.8rem;
+				border:none;
+			}
+		}
+
+		@include media-xs{
+			grid-template-columns: repeat(4, 1fr);
+
+			button{
+				padding: 0.5em;
+				font-size: 0.9em;
+			}
+
+			#chips{
+				position: absolute;
+				width: 100%;
+				top: -2.5rem;
+			}
+		}
+	}
+
+	@include media-m{
+		gap: 6rem;
+	}
+}
 </style>

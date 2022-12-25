@@ -1,6 +1,6 @@
 import { reactive } from 'vue';
 import { wait } from '../../utils.js';
-import { loadDeck, draw } from '../../deckService.js'
+import { loadDeck, draw, shuffle } from '../../deckService.js'
 import { player, dealer } from './';
 
 export const game = reactive({
@@ -10,7 +10,7 @@ export const game = reactive({
 
     async gameStart(){
         this.phase = 'deal';
-        this.deck = await loadDeck();
+        this.deck = await loadDeck(6);
         player.placeWager(2);
         this.deal();
     },
@@ -30,7 +30,7 @@ export const game = reactive({
         await wait(500, () => this.evaluatePlayerCards())
     },
     evaluatePlayerCards(noResultCallback = () => game.phase = 'play'){
-        if(player.score > 21) this.endGame('BUST');
+        if(player.score > 21) this.endRound('BUST');
 	    else if(player.score == 21) this.playDealerHand();
 	    else noResultCallback();
     },
@@ -40,21 +40,22 @@ export const game = reactive({
         wait(1000, () => dealer.dealerDraw());
     },
     evaluateDealerCards(){
-        if(player.score == 21 && dealer.score != 21) this.endGame('BLACK JACK');
-        else if(player.score > dealer.score || dealer.score > 21) this.endGame('WIN');
-        else if(player.score < dealer.score) this.endGame('LOSE');
-        else this.endGame('PUSH');
+        if(player.score == 21 && dealer.score != 21) this.endRound('BLACK JACK');
+        else if(player.score > dealer.score || dealer.score > 21) this.endRound('WIN');
+        else if(player.score < dealer.score) this.endRound('LOSE');
+        else this.endRound('PUSH');
     },
-    endGame(result){
+    endRound(result){
         this.phase = 'end';
         this.result = result;
         wait(300, () => player.evaluateChips(result));
     },
-    newGame(){
+    async newRound(){
         this.phase = '';
         this.result = '';
         player.reset();
         dealer.reset();
-        wait(500, () => this.deal())
+        if(this.deck.remaining < 100) await shuffle(this.deck.deck_id);
+        wait(500, () => this.deal());
     }
 });
