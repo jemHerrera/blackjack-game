@@ -127,10 +127,14 @@ game.gameStart();
 
 				@include media-xs{
 					margin: 0;
-					font-size: 0.6rem;
+					font-size: 0.7rem;
 					&.card-zoom{
 						transform: scale(1.05);
 					}
+				}
+
+				@include media-xxs{
+					font-size: 0.6rem;
 				}
 			}
 
@@ -168,6 +172,9 @@ game.gameStart();
 			gap: 3em;
 			padding: 3.5rem 0;
 		}
+		@include media-xs{
+			padding: 3rem 0;
+		}
 	}
 
 	.deck-count{
@@ -191,7 +198,7 @@ game.gameStart();
 	}
 
 	@include media-xs{
-		padding: 1rem;
+		padding: 0.5rem;
 	}
 }
 </style>
