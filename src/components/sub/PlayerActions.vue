@@ -77,8 +77,8 @@
 			transition: all 0.5s ease;
 		}
 
-		@include media-xxs{
-			font-size: 1.5rem;
+		@include media-xs{
+			font-size: 1rem;
 		}
 	}
 
@@ -168,7 +168,7 @@
 
 			button{
 				padding: 1em 0.5em;
-				font-size: 0.9em;
+				font-size: 0.8em;
 			}
 
 			#chips{

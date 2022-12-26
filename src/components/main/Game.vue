@@ -115,10 +115,10 @@ game.gameStart();
 				font-size: 0.9rem;
 
 				@include media-xs{
-					font-size: 0.7rem;
+					font-size: 0.6rem;
 				}
 				@include media-xxs{
-					font-size: 0.6rem;
+					font-size: 0.5rem;
 				}
 			}
 
@@ -130,7 +130,7 @@ game.gameStart();
 
 				@include media-xs{
 					margin: 0;
-					font-size: 0.9rem;
+					font-size: 0.8rem;
 					&.card-zoom{
 						transform: scale(1.05);
 					}
@@ -159,7 +159,7 @@ game.gameStart();
 					background-color: $color-lose;
 				}
 
-				@include media-xxs{
+				@include media-xs{
 					font-size: 1rem;
 				}
 			}
@@ -170,7 +170,7 @@ game.gameStart();
 		}
 
 		@include media-xxs{
-			padding: 4rem 0;
+			padding: 2rem 0 4rem 0;
 		}
 	}
 

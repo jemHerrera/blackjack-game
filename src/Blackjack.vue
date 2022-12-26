@@ -30,9 +30,9 @@
     .button-settings{
       position: fixed;
       background: none;
-      top: 1rem;
-      left: 1rem;
-      font-size: 3rem;
+      font-size: 2rem;
+      top: 0.5em;
+      left: 0.5em;
       z-index: 3;
 
       span{
