@@ -29,29 +29,30 @@
         z-index: 2;
         margin-left: -90%;
         transition: margin-left 0.3s ease;
+        font-size: 0.8rem;
 
         .settings-container{
             position: relative;
             background-color: $color-gdark1;
             height: 100%;
-            width: 90%;
+            width: 95%;
             z-index: 1;
             border-right: 1px solid $color-glight1;
             @include flex($direction: column, $justify:center, $align:center);
 
             header{
-                margin-bottom: 5rem;
-                padding: 2rem;
+                margin-bottom: 5em;
+                padding: 2em;
                 *{
                     text-align:center;
                 }
                 h1{
-                    font-size: 3.25rem;
+                    font-size: 3em;
                     font-weight: bold;
                     color: white;
                 }
                 h2{
-                    font-size: 1.5rem;
+                    font-size: 1.25em;
                     font-weight: 300;
                     color: $color-glight2;
 
@@ -72,13 +73,13 @@
                 position: absolute;
                 bottom: 0;
                 width: 100%;
-                padding: 1rem;
+                padding: 1em;
                 @include flex($direction: column, $align:center);
 
                 a{
                     color: $color-glight1;
                     text-decoration: none;
-                    font-size: 1rem;
+                    font-size: 0.9em;
 
                     &:hover{
                         color: white;
@@ -100,6 +101,7 @@
             position: relative;
             display: block;
             margin-left: 0;
+            font-size: 1rem;
             
             .settings-container{
                 width: 100%;
