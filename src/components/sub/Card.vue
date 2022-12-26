@@ -1,12 +1,23 @@
 <script setup>
+    import { computed} from 'vue';
+
     const props = defineProps({
         card: Object
+    })
+
+    const cardClasses = computed(() => {
+        return [
+            'card',
+            {
+                facedown: props.card.facedown
+            }
+        ]
     })
 
 </script>
 
 <template>
-    <div :class="['card', {facedown: card.facedown}]">
+    <div :class="cardClasses">
         <img :src="card.image" />
     </div>
 </template>
@@ -19,19 +30,18 @@
         position: relative;
         width: 8.5em;
         border-radius: 0.5em;
-        overflow: hidden;
         transition: all 0.3s;
-        background: #2c4d3e;
 
         img{
-            transition: all 300ms ease;
+            transition: transform 400ms ease;
             width: 100%;
         }
 
         &.facedown{
             img{
-                transform: rotateY(90deg);
+                transform: rotateY(-90deg) translateX(-100px);
             }
+            
             &::after{
                 content: '';
                 background: url('/images/backside-vue.jpg') no-repeat;
