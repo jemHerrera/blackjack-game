@@ -115,9 +115,6 @@ game.gameStart();
 				font-size: 0.9rem;
 
 				@include media-xs{
-					font-size: 0.6rem;
-				}
-				@include media-xxs{
 					font-size: 0.5rem;
 				}
 			}
@@ -130,13 +127,10 @@ game.gameStart();
 
 				@include media-xs{
 					margin: 0;
-					font-size: 0.8rem;
+					font-size: 0.6rem;
 					&.card-zoom{
 						transform: scale(1.05);
 					}
-				}
-				@include media-xxs{
-					font-size: 0.7rem;
 				}
 			}
 
@@ -169,8 +163,10 @@ game.gameStart();
 			padding: 5rem 0;
 		}
 
-		@include media-xxs{
-			padding: 2rem 0 4rem 0;
+		@include media-xs{
+			justify-content: center;
+			gap: 3em;
+			padding: 3.5rem 0;
 		}
 	}
 
@@ -190,7 +186,7 @@ game.gameStart();
 			text-align: right;
 		}
 		@include media-xs{
-			font-size: 0.8rem;
+			font-size: 0.7rem;
 		}
 	}
 

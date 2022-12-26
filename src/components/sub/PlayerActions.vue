@@ -172,20 +172,19 @@
 			}
 
 			#chips{
+				font-size: 0.5rem;
 				position: absolute;
 				width: 100%;
-				top: -2.5rem;
+				top: -1.75rem;
+				*{
+					opacity: 0.5;
+				}
 			}
 		}
 
 		@include media-xxs{
-
 			button{
 				font-size: 0.7em;
-			}
-
-			#chips{
-				font-size: 0.6rem;
 			}
 		}
 	}
@@ -194,8 +193,8 @@
 		gap: 6rem;
 	}
 
-	@include media-xxs{
-		gap: 5rem;
+	@include media-xs{
+		gap: 4.5rem;
 	}
 }
 </style>
