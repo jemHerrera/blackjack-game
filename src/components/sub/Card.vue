@@ -30,16 +30,17 @@
         position: relative;
         width: 8.5em;
         border-radius: 0.5em;
+        overflow: hidden;
         transition: all 0.3s;
 
         img{
-            transition: transform 400ms ease;
+            transition: transform 300ms ease;
             width: 100%;
         }
 
         &.facedown{
             img{
-                transform: rotateY(-90deg) translateX(-100px);
+                transform: rotateY(90deg);
             }
             
             &::after{
