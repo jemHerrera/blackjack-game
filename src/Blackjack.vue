@@ -23,8 +23,7 @@
   @use './styles/resets.scss';
 
   #blackjack{
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
     @include flex;
     background-color: $color-gdark0;
 
@@ -45,13 +44,6 @@
         display: none;
       }
     }
-
-    @include media-xs{
-      position: fixed;
-      top:0;
-      left:0;
-      bottom:0;
-      right:0;
-    }
+    
   }
 </style>

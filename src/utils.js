@@ -34,4 +34,9 @@ function getHandScore(hand){
 	return baseScore
 }
 
-export { wait, getCardValue, getHandScore }
+function documentHeight(){
+	const doc = document.documentElement
+	doc.style.setProperty('--doc-height', `${window.innerHeight}px`)
+}
+
+export { wait, getCardValue, getHandScore, documentHeight }
