@@ -105,17 +105,20 @@ game.gameStart();
 			.hand{
 				@include flex($gap: 0.5rem);
 
-				&#dealer-hand{
-					font-size: 0.9rem;
-
-					@include media-xs{
-						font-size: 0.7rem;
-					}
-				}
-
 				@include media-xs{
 					gap: 0rem;
 					margin-left:5em;
+				}
+			}
+
+			&#dealer-hand-container{
+				font-size: 0.9rem;
+
+				@include media-xs{
+					font-size: 0.7rem;
+				}
+				@include media-xxs{
+					font-size: 0.6rem;
 				}
 			}
 
@@ -132,6 +135,9 @@ game.gameStart();
 						transform: scale(1.05);
 					}
 				}
+				@include media-xxs{
+					font-size: 0.7rem;
+				}
 			}
 
 			.score{
@@ -139,11 +145,11 @@ game.gameStart();
 				@include flex($align:center, $justify: center);
 				font-size: 1.5rem;
 				font-weight: 600;
-				width: 3rem;
-				height: 3rem;
-				border-radius: 3rem;
-				right: -1.5rem;
-				top: -1.5rem;
+				width: 2em;
+				height: 2em;
+				border-radius: 3em;
+				right: -1em;
+				top: -1em;
 				background: white;
 
 				&.blackjack{
@@ -152,11 +158,19 @@ game.gameStart();
 				&.bust{
 					background-color: $color-lose;
 				}
+
+				@include media-xxs{
+					font-size: 1rem;
+				}
 			}
 		}
 
 		@include media-l{
 			padding: 5rem 0;
+		}
+
+		@include media-xxs{
+			padding: 4rem 0;
 		}
 	}
 
@@ -174,6 +188,9 @@ game.gameStart();
 			font-size: 0.9em;
 			color: $color-glight2;
 			text-align: right;
+		}
+		@include media-xs{
+			font-size: 0.8rem;
 		}
 	}
 

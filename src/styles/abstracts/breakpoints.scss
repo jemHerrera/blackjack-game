@@ -15,6 +15,10 @@
 @mixin media-xs{
     @media only screen and (max-width: 600px) {@content;}
 }
+// Smallest phones, i.e Iphone SE
+@mixin media-xxs{
+    @media only screen and (max-width: 389px) {@content;}
+}
 
 // Mobile first media query
 // 601 - 900 ipad portrait, phone landscape

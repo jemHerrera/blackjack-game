@@ -69,14 +69,19 @@
 		@include flex($justify: center);
 		font-size: 2rem;
 		height: 2em;
-		margin-left: 2rem;
+		margin-left: 1em;
 
 		.chip{
 			height: inherit;
-			margin-left: -2rem;
+			margin-left: -1em;
 			transition: all 0.5s ease;
 		}
+
+		@include media-xxs{
+			font-size: 1.5rem;
+		}
 	}
+
 	.user-controls{
 		display: grid;
 		grid-template-columns: repeat(5, 1fr);
@@ -129,6 +134,9 @@
 			.coin-icon img{
 				height: 2em;
 			}
+			.material-icons{
+				font-size: 1.5em;
+			}
 			.coin-quantity{
 				font-size: 1.5em;
 			}
@@ -155,7 +163,7 @@
 			grid-template-columns: repeat(4, 1fr);
 
 			button{
-				padding: 0.5em;
+				padding: 1em 0.5em;
 				font-size: 0.9em;
 			}
 
@@ -165,10 +173,25 @@
 				top: -2.5rem;
 			}
 		}
+
+		@include media-xxs{
+
+			button{
+				font-size: 0.7em;
+			}
+
+			#chips{
+				font-size: 0.6rem;
+			}
+		}
 	}
 
 	@include media-m{
 		gap: 6rem;
+	}
+
+	@include media-xxs{
+		gap: 5rem;
 	}
 }
 </style>
