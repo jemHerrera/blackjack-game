@@ -41,7 +41,7 @@
 			/>
 		</transition-group>
 		<div class="user-controls">
-			<button :class="{'active': player.hand.length == 2 && player.chips >= 2}" id="double-down" @click="doubleDown">Double Down</button>
+			<button id="double-down" @click="doubleDown" :class="{'visible': game.phase=='play' && player.hand.length == 2 && player.chips >= 2}">Double Down</button>
 			<button id="split" @click="split"><span>Split</span><span class="coming-soon">Coming Soon</span></button>
 			<div id="chips">
 				<span class="coin-icon"><img src="/images/chip-vue.png"/></span>
@@ -102,19 +102,23 @@
 			color: white;
 			font-weight: 600;
 
-			&#double-down, &#split{
+			&#split{
+				@include flex($direction:column, $align:center, $justify:center, $gap: 0.2em);
 				opacity: 0.1;
 				pointer-events: none;
-				@include flex($direction:column, $align:center, $justify:center, $gap: 0.2em);
-
-				&.active{
-					opacity:1;
-					pointer-events: visible;
-				}
 
 				span.coming-soon{
 					font-size: 0.7em;
 					font-style: italic;
+				}
+			}
+			&#double-down{
+				opacity: 0.1;
+				pointer-events: none;
+
+				&.visible{
+					opacity:1;
+					pointer-events: visible;
 				}
 			}
 			
