@@ -3,7 +3,7 @@
 
 	const props = defineProps({
 		gameResult: String,
-		playerChips: Number
+		player: Object
 	})
 	defineEmits(['new-round'])
 
@@ -14,6 +14,10 @@
 		}
 	})
 
+	const outOfChips = computed(() => {
+		return props.player.chips + props.player.wager < 2
+	})
+
 
 </script>
 
@@ -21,10 +25,8 @@
 	<transition name="fade">
     <div v-if="gameResult" id="result-overlay" @click="$emit('new-round')">
 		<h2 :class="classes">{{ gameResult }}</h2>
-		<p v-if="playerChips > 0">Click anywhere to continue</p>
-		<div v-else class="out-of-chips-container">
-			<p>You are out of chips! Click anywhere to restart the game.</p>
-		</div>
+		<p v-if="!outOfChips">Click anywhere to continue</p>
+		<p v-else class="out-of-chips-container">You are out of chips! Click anywhere to restart the game.</p>
 	</div>
 	</transition>
 </template>
@@ -55,6 +57,7 @@
 			}
 			p{
 				color: white;
+				text-align:center;
 			}
 		}
     

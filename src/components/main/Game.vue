@@ -67,7 +67,7 @@ game.gameStart();
 		/>
 		<Results 
 			:game-result="game.result"
-			:player-chips="player.chips"
+			:player="player"
 			@new-round="game.newRound()"
 		/>
 		<div v-if="game.deck" class="deck-count">

@@ -12,8 +12,8 @@ export const player = reactive({
 		this.score = getHandScore(this.hand);
 	},
 	reset(){
-		if(player.chips < 1) player.chips = 14;
 		this.collectWager();
+		if(player.chips < 2) player.chips = 14;
 		this.hand = [];
 		wait(500, () => {
 			this.placeWager(2);

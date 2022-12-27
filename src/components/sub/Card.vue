@@ -1,24 +1,26 @@
 <script setup>
-    import { computed} from 'vue';
+    import { ref, computed } from 'vue';
 
     const props = defineProps({
         card: Object
     })
 
+    const loaded = ref(false);
+
     const cardClasses = computed(() => {
         return [
             'card',
             {
-                facedown: props.card.facedown
+                facedown: props.card.facedown,
+                loading: !loaded.value
             }
         ]
     })
-
 </script>
 
 <template>
     <div :class="cardClasses">
-        <img :src="card.image" />
+        <img :src="card.image" @load="loaded = true"/>
     </div>
 </template>
 
@@ -31,7 +33,9 @@
         width: 8.5em;
         border-radius: 0.5em;
         overflow: hidden;
-        transition: all 0.3s;
+        transition: all 0.3s ease;
+        background: url('/images/backside-vue.jpg') no-repeat;
+        background-size: contain;
 
         img{
             transition: transform 300ms ease;
@@ -51,6 +55,10 @@
                 height: 100%;
                 width: 100%;
             }
+        }
+
+        &.loading{
+            transition-delay: 0.3s;
         }
 
         &.enlarge{
